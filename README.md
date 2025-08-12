@@ -1,4 +1,4 @@
-## This foke support 4-step lora (Org. 8-step)
+## This fork support 4-step lora (Org. 8-step)
 ## Qwen Image (MPS/CUDA/CPU)
 
 Generate images from text prompts using the Hugging Face Diffusers pipeline for `Qwen/Qwen-Image`, with automatic device selection for Apple Silicon (MPS), NVIDIA CUDA, or CPU fallback.
