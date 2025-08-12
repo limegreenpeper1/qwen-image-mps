@@ -11,7 +11,7 @@
 
 """
 This script wrapper allows direct execution via:
-uv run https://raw.githubusercontent.com/ivanfioravanti/qwen-image-mps/refs/heads/main/qwen-image-mps.py
+uv run https://raw.githubusercontent.com/limegreenpeper1/qwen-image-mps/refs/heads/main/qwen-image-mps.py
 
 For package installation, use: pip install qwen-image-mps
 """
