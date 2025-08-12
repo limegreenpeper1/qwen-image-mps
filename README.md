@@ -1,3 +1,4 @@
+## This foke support 4 step lora (Org. 8step)
 ## Qwen Image (MPS/CUDA/CPU)
 
 Generate images from text prompts using the Hugging Face Diffusers pipeline for `Qwen/Qwen-Image`, with automatic device selection for Apple Silicon (MPS), NVIDIA CUDA, or CPU fallback.
@@ -70,7 +71,7 @@ qwen-image-mps
 # Custom prompt and fewer steps
 qwen-image-mps -p "A serene alpine lake at sunrise, ultra detailed, cinematic" -s 30
 
-# Fast mode with Lightning LoRA (8 steps)
+# Fast mode with Lightning LoRA (4 steps)
 qwen-image-mps -f -p "A magical forest with glowing mushrooms"
 
 # Custom seed for reproducible generation
