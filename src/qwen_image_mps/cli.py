@@ -53,7 +53,7 @@ def get_lora_path():
         # This will download to HF cache or return cached path
         lora_path = hf_hub_download(
             repo_id="lightx2v/Qwen-Image-Lightning",
-            filename="Qwen-Image-Lightning-8steps-V1.0.safetensors",
+            filename="Qwen-Image-Lightning-4steps-V1.0.safetensors",
             repo_type="model",
         )
         print(f"Lightning LoRA loaded from: {lora_path}")
@@ -145,8 +145,8 @@ def main() -> None:
         lora_path = get_lora_path()
         if lora_path:
             pipe = merge_lora_from_safetensors(pipe, lora_path)
-            # Use fixed 8 steps for Lightning mode
-            num_steps = 8
+            # Use fixed 4 steps for Lightning mode
+            num_steps = 4
             cfg_scale = 1.0
             print(f"Fast mode enabled: {num_steps} steps, CFG scale {cfg_scale}")
         else:
