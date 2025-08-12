@@ -34,12 +34,12 @@ qwen-image-mps --help
 
 You can run this script directly using `uv run` without installation - it will install all dependencies automatically in an isolated environment:
 ```bash
-uv run https://raw.githubusercontent.com/ivanfioravanti/qwen-image-mps/refs/heads/main/qwen-image-mps.py --help
+uv run https://raw.githubusercontent.com/limegreenpeper1/qwen-image-mps/refs/heads/main/qwen-image-mps.py --help
 ```
 
 Or download the file first:
 ```bash
-curl -O https://raw.githubusercontent.com/ivanfioravanti/qwen-image-mps/refs/heads/main/qwen-image-mps.py
+curl -O https://raw.githubusercontent.com/limegreenpeper1/qwen-image-mps/refs/heads/main/qwen-image-mps.py
 uv run qwen-image-mps.py --help
 ```
 
@@ -47,7 +47,7 @@ uv run qwen-image-mps.py --help
 
 Clone the repository and install in development mode:
 ```bash
-git clone https://github.com/ivanfioravanti/qwen-image-mps.git
+git clone https://github.com/limegreenpeper1/qwen-image-mps.git
 cd qwen-image-mps
 pip install -e .
 ```
@@ -131,7 +131,7 @@ To contribute or modify the tool:
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/ivanfioravanti/qwen-image-mps.git
+git clone https://github.com/limegreenpeper1/qwen-image-mps.git
 cd qwen-image-mps
 ```
 
