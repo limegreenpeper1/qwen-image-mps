@@ -1,4 +1,4 @@
-## This fork support others lora. -only lora or lighting. not for both (enable lora only).
+## This fork support others lora. Ether lora or lighting. If both are installed, only lora will be enabled..
 
 ===help
 >uv run qwen-image-mps.py --help
