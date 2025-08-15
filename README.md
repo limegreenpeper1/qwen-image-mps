@@ -1,6 +1,4 @@
-=============
 ## This fork support others lora. -only lora or lighting. not for both (enable lora only).
-## Qwen Image (MPS/CUDA/CPU)
 
 ===help
 >uv run qwen-image-mps.py --help
@@ -33,8 +31,9 @@ options:
 > uv run qwen-image-mps.py --lora-repo-id 'alfredplpl/qwen-image-modern-anime-lora' --lora-filename 'diffusers.safetensors' -p 'Japanese modern anime style, an upper body shot of an woman standing on the rainy street. She watches the sky.' -np 'photo, cg, 3d' -s 24 --cfg 1.0
 (thanks for alfredplpl-san)
 
-=============end 
-Below Original
+=============end
+
+## Qwen Image (MPS/CUDA/CPU)
 Generate images from text prompts using the Hugging Face Diffusers pipeline for `Qwen/Qwen-Image`, with automatic device selection for Apple Silicon (MPS), NVIDIA CUDA, or CPU fallback.
 
 ### Features
