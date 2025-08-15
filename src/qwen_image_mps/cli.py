@@ -15,6 +15,13 @@ def build_arg_parser() -> argparse.ArgumentParser:
         help="Prompt text to condition the image generation.",
     )
     parser.add_argument(
+        "-np",
+        "--negative-prompt",
+        type=str,
+        default=""" """,
+        help="Negative Prompt text to condition the image generation.",
+    )
+    parser.add_argument(
         "-s",
         "--steps",
         type=int,
@@ -25,7 +32,12 @@ def build_arg_parser() -> argparse.ArgumentParser:
         "-f",
         "--fast",
         action="store_true",
-        help="Use Lightning LoRA for fast generation.",
+        help="Use Lightning LoRA v1.1 for fast generation (8 steps).",
+    )
+    parser.add_argument(
+        "--ultra-fast",
+        action="store_true",
+        help="Use Lightning LoRA v1.0 for ultra-fast generation (4 steps).",
     )
     parser.add_argument(
         "--seed",
@@ -37,31 +49,76 @@ def build_arg_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--lora-repo-id",
+        type=str,
+        help="huggintface repo_id",
+    )
+    parser.add_argument(
+        "--lora-filename",
+        type=str,
+        help="huggintface filename",
+    )
+    parser.add_argument(
         "--num-images",
         type=int,
         default=1,
         help="Number of images to generate.",
     )
+    parser.add_argument(
+        "--cfg",
+        type=float,
+        default=4.0,
+        help="Use CFG : light/lora 1.0 others 4.0",
+    )
     return parser
 
 
-def get_lora_path():
-    """Get the Lightning LoRA from Hugging Face cache."""
+def get_lora_path(ultra_fast=False):
+    """Get the Lightning LoRA from Hugging Face Hub with a silent cache freshness check.
+
+    The function will:
+    - Look up any locally cached file for the target filename.
+    - Then fetch the latest from the Hub (without forcing) which will reuse cache
+      if up-to-date, or download a newer snapshot if the remote changed.
+    - Return the final resolved local path.
+    """
     from huggingface_hub import hf_hub_download
 
+    if ultra_fast:
+        filename = "Qwen-Image-Lightning-4steps-V1.0-bf16.safetensors"
+        version = "v1.0 (4-steps)"
+    else:
+        filename = "Qwen-Image-Lightning-8steps-V1.1.safetensors"
+        version = "v1.1 (8-steps)"
+
     try:
-        # This will download to HF cache or return cached path
-        lora_path = hf_hub_download(
+        cached_path = None
+        try:
+            cached_path = hf_hub_download(
+                repo_id="lightx2v/Qwen-Image-Lightning",
+                filename=filename,
+                repo_type="model",
+                local_files_only=True,
+            )
+        except Exception:
+            cached_path = None
+
+        # Resolve latest from Hub; will reuse cache if fresh, or download newer
+        latest_path = hf_hub_download(
             repo_id="lightx2v/Qwen-Image-Lightning",
-            filename="Qwen-Image-Lightning-4steps-V1.0.safetensors",
+            filename=filename,
             repo_type="model",
         )
-        print(f"Lightning LoRA loaded from: {lora_path}")
-        return lora_path
-    except Exception as e:
-        print(f"Failed to load Lightning LoRA: {e}")
-        return None
 
+        if cached_path and latest_path != cached_path:
+            # A newer snapshot was fetched; keep output quiet per request
+            pass
+
+        print(f"Lightning LoRA {version} loaded from: {latest_path}")
+        return latest_path
+    except Exception as e:
+        print(f"Failed to load Lightning LoRA {version}: {e}")
+        return None
 
 def merge_lora_from_safetensors(pipe, lora_path):
     """Merge LoRA weights from safetensors file into the pipeline's transformer."""
@@ -119,6 +176,8 @@ def main() -> None:
 
     import torch
     from diffusers import DiffusionPipeline
+    from huggingface_hub import hf_hub_download
+    import peft
 
     model_name = "Qwen/Qwen-Image"
 
@@ -139,29 +198,67 @@ def main() -> None:
     pipe = DiffusionPipeline.from_pretrained(model_name, torch_dtype=torch_dtype)
     pipe = pipe.to(device)
 
-    # Apply Lightning LoRA if fast mode is enabled
-    if args.fast:
-        print("Loading Lightning LoRA for fast generation...")
-        lora_path = get_lora_path()
+    # Load LoRA weights
+    lora_repo_id = args.lora_repo_id
+    lora_filename = args.lora_filename
+
+    if (lora_repo_id is not None) and (lora_filename is not None):
+        print ("use lora")
+        lora_path = hf_hub_download(
+            repo_id=lora_repo_id,
+            filename=lora_filename,
+            repo_type="model",
+        )
+        
+        #lora読み込み部分
+        pipe.load_lora_weights(lora_path, adapter_name="lora")
+    else:
+        print ("not use lora")
+
+    # Apply Lightning LoRA if fast or ultra-fast mode is enabled
+    if args.ultra_fast:
+        print("Loading Lightning LoRA v1.0 for ultra-fast generation...")
+        lora_path = get_lora_path(ultra_fast=True)
         if lora_path:
             pipe = merge_lora_from_safetensors(pipe, lora_path)
-            # Use fixed 4 steps for Lightning mode
-            num_steps = 4
-            cfg_scale = 1.0
-            print(f"Fast mode enabled: {num_steps} steps, CFG scale {cfg_scale}")
-        else:
-            print("Warning: Could not load Lightning LoRA")
-            print("Falling back to normal generation...")
-            num_steps = args.steps
-            cfg_scale = 4.0
-    else:
-        num_steps = args.steps
-        cfg_scale = 4.0
+            # Use fixed 4 steps for Ultra Lightning mode
+#            num_steps = 4
+#            cfg_scale = 1.0
+#            print(f"Ultra-fast mode enabled: {num_steps} steps, CFG scale {cfg_scale}")
+#        else:
+#            print("Warning: Could not load Lightning LoRA v1.0")
+#            print("Falling back to normal generation...")
+#            num_steps = args.steps
+#            cfg_scale = 4.0
+    elif args.fast:
+        print("Loading Lightning LoRA v1.1 for fast generation...")
+        lora_path = get_lora_path(ultra_fast=False)
+        if lora_path:
+            pipe = merge_lora_from_safetensors(pipe, lora_path)
+            # Use fixed 8 steps for Lightning mode
+#            num_steps = 8
+#            cfg_scale = 1.0
+#            print(f"Fast mode enabled: {num_steps} steps, CFG scale {cfg_scale}")
+#        else:
+#            print("Warning: Could not load Lightning LoRA v1.1")
+#            print("Falling back to normal generation...")
+#            num_steps = args.steps
+#            cfg_scale = 4.0
+#    else:
+#        num_steps = args.steps
+#        cfg_scale = 4.0
+#
+    #---Load LoRA Weights
+    print("Done ready pipe.")
 
+#
     prompt = args.prompt
-    negative_prompt = (
-        " "  # using an empty string if you do not have specific concept to remove
-    )
+    negative_prompt = args.negative_prompt
+    num_steps = args.steps
+    num_seed = int(args.seed)
+    # Ensure we generate at least one image
+    num_images = max(1, int(args.num_images))
+    cfg_scale = args.cfg
 
     aspect_ratios = {
         "1:1": (1328, 1328),
@@ -176,8 +273,6 @@ def main() -> None:
     width, height = aspect_ratios["16:9"]
     generator_device = "cpu" if device == "mps" else device
 
-    # Ensure we generate at least one image
-    num_images = max(1, int(args.num_images))
 
     # Shared timestamp for this generation batch
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -190,14 +285,16 @@ def main() -> None:
     for image_index in range(num_images):
         if seed_provided:
             # Deterministic: increment seed per image starting from the provided seed
-            per_image_seed = int(args.seed) + image_index
+            per_image_seed = args.seed + image_index
         elif num_images > 1:
             # Non-deterministic for multi-image when no seed explicitly provided
             # Use 63-bit to keep it positive and well within torch's expected range
             per_image_seed = secrets.randbits(63)
         else:
             # Single image without explicit seed: use default (42)
-            per_image_seed = int(args.seed)
+            per_image_seed = args.seed
+
+        print(f"per_image_seed:{per_image_seed}")
         image = pipe(
             prompt=prompt,
             negative_prompt=negative_prompt,
@@ -212,7 +309,7 @@ def main() -> None:
 
         # Save with timestamp to avoid overwriting previous generations
         suffix = f"-{image_index+1}" if num_images > 1 else ""
-        output_filename = f"image-{timestamp}{suffix}.png"
+        output_filename = f"image-{timestamp}{suffix}-{per_image_seed}.png"
         image.save(output_filename)
         saved_paths.append(os.path.abspath(output_filename))
 
