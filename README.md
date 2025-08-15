@@ -7,7 +7,7 @@ usage: qwen-image-mps.py [-h] [-p PROMPT] [-np NEGATIVE_PROMPT] [-s STEPS] [-f] 
 ===sample
 
 Base
-> uv run qwen-image-mps.py -p 'Japanese modern anime style, an upper body shot of an woman standing on the rainy street. She watches the sky.' -np 'photo, cg, 3d' -s 24 --cfg 4.
+> uv run qwen-image-mps.py -p 'Japanese modern anime style, an upper body shot of an woman standing on the rainy street. She watches the sky.' -np 'photo, cg, 3d' -s 24 --cfg 4
 
 Use lora (thanks for alfredplpl-san)
 > uv run qwen-image-mps.py --lora-repo-id 'alfredplpl/qwen-image-modern-anime-lora' --lora-filename 'diffusers.safetensors' -p 'Japanese modern anime style, an upper body shot of an woman standing on the rainy street. She watches the sky.' -np 'photo, cg, 3d' -s 24 --cfg 1.0
