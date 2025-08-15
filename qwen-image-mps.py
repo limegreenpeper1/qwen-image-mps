@@ -4,6 +4,7 @@
 #   "diffusers @ git+https://github.com/huggingface/diffusers",
 #   "transformers",
 #   "accelerate",
+#   "peft",
 #   "safetensors",
 #   "huggingface-hub",
 # ]
