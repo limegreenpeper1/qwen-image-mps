@@ -1,6 +1,40 @@
-## This fork support 4-step lora (Org. 8-step)
+=============
+## This fork support others lora. -only lora or lighting. not for both (enable lora only).
 ## Qwen Image (MPS/CUDA/CPU)
 
+===help
+>uv run qwen-image-mps.py --help
+usage: qwen-image-mps.py [-h] [-p PROMPT] [-np NEGATIVE_PROMPT] [-s STEPS] [-f] [--ultra-fast] [--seed SEED] [--lora-repo-id LORA_REPO_ID] [--lora-filename LORA_FILENAME] [--num-images NUM_IMAGES] [--cfg CFG]
+
+Generate an image with Qwen-Image
+
+options:
+  -h, --help            show this help message and exit
+  -p PROMPT, --prompt PROMPT
+                        Prompt text to condition the image generation. (default: A coffee shop entrance features a chalkboard sign reading "Apple Silicon Qwen Coffee 😊 $2 per cup," with a neon light beside it
+                        displaying "Generated with MPS on Apple Silicon". Next to it hangs a poster showing a beautiful Italian woman, and beneath the poster is written "Just try it!". Ultra HD, 4K, cinematic
+                        composition)
+  -np NEGATIVE_PROMPT, --negative-prompt NEGATIVE_PROMPT
+                        Negative Prompt text to condition the image generation. (default: )
+  -s STEPS, --steps STEPS
+                        Number of inference steps for normal generation. (default: 50)
+  -f, --fast            Use Lightning LoRA v1.1 for fast generation (8 steps). (default: False)
+  --ultra-fast          Use Lightning LoRA v1.0 for ultra-fast generation (4 steps). (default: False)
+  --seed SEED           Random seed for reproducible generation (default: 42). If not explicitly provided and generating multiple images, a new random seed is used for each image. (default: 42)
+  --lora-repo-id LORA_REPO_ID
+                        huggintface repo_id (default: None)
+  --lora-filename LORA_FILENAME
+                        huggintface filename (default: None)
+  --num-images NUM_IMAGES
+                        Number of images to generate. (default: 1)
+  --cfg CFG             Use CFG : light/lora 1.0 others 4.0 (default: 4.0)
+
+===sample
+> uv run qwen-image-mps.py --lora-repo-id 'alfredplpl/qwen-image-modern-anime-lora' --lora-filename 'diffusers.safetensors' -p 'Japanese modern anime style, an upper body shot of an woman standing on the rainy street. She watches the sky.' -np 'photo, cg, 3d' -s 24 --cfg 1.0
+(thanks for alfredplpl-san)
+
+=============end 
+Below Original
 Generate images from text prompts using the Hugging Face Diffusers pipeline for `Qwen/Qwen-Image`, with automatic device selection for Apple Silicon (MPS), NVIDIA CUDA, or CPU fallback.
 
 ### Features
