@@ -16,6 +16,9 @@ Use lora
 Use Lightning 8-step
 > uv run qwen-image-mps.py -p 'Japanese modern anime style, an upper body shot of an woman standing on the rainy street. She watches the sky.' -np 'photo, cg, 3d' -f -s 8 --cfg 1.0
 
+Use Lightning 4-step
+> uv run qwen-image-mps.py -p 'Japanese modern anime style, an upper body shot of an woman standing on the rainy street. She watches the sky.' -np 'photo, cg, 3d' --ultra-fast -s 4 --cfg 1.0
+
 =============end
 
 ## Qwen Image (MPS/CUDA/CPU)
