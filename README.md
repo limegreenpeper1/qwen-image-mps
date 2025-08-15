@@ -9,9 +9,8 @@ usage: qwen-image-mps.py [-h] [-p PROMPT] [-np NEGATIVE_PROMPT] [-s STEPS] [-f] 
 Base
 > uv run qwen-image-mps.py -p 'Japanese modern anime style, an upper body shot of an woman standing on the rainy street. She watches the sky.' -np 'photo, cg, 3d' -s 24 --cfg 4.
 
-Use lora
+Use lora (thanks for alfredplpl-san)
 > uv run qwen-image-mps.py --lora-repo-id 'alfredplpl/qwen-image-modern-anime-lora' --lora-filename 'diffusers.safetensors' -p 'Japanese modern anime style, an upper body shot of an woman standing on the rainy street. She watches the sky.' -np 'photo, cg, 3d' -s 24 --cfg 1.0
-(thanks for alfredplpl-san)
 
 Use Lightning 8-step
 > uv run qwen-image-mps.py -p 'Japanese modern anime style, an upper body shot of an woman standing on the rainy street. She watches the sky.' -np 'photo, cg, 3d' -f -s 8 --cfg 1.0
